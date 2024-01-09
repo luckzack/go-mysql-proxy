@@ -6,19 +6,19 @@ import (
 	"log"
 	"os"
 	"sync"
-
 )
 
 type ProxyConfig struct {
-	Alias string `yaml:"alias"`
-	Enabled bool `yaml:"enabled"`
-	Listen string `yaml:"listen"`
-	Mysql string `yaml:"mysql"`
+	Alias   string `yaml:"alias"`
+	Enabled bool   `yaml:"enabled"`
+	Listen  string `yaml:"listen"`
+	Mysql   string `yaml:"mysql"`
 }
 
 type GlobalConfig struct {
-	GUI string `yaml:"gui"`
-	Proxies    []*ProxyConfig    `yaml:"proxies"`
+	GUI        string         `yaml:"gui"`
+	UseEmbedUI bool           `yaml:"use_embed_ui"`
+	Proxies    []*ProxyConfig `yaml:"proxies"`
 }
 
 var (

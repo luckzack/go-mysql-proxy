@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Lottip</title>
+<title>🐘Mysql-Proxy</title>
 <meta name="description" content="">
 <meta name="author" content="">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,6 +12,16 @@
 <link rel="icon" type="image/png" href="images/favicon.png">
 </head>
 <body id="bootstrap-override">
+<style>
+    .btn {
+        margin-bottom: 10px; /* 增加按钮之间的下方间距 */
+    }
+    .custom-popup-class {
+        /*left: 50%; */
+        top: -20%;
+        /*transform: translate(-50%, -50%); !* 使用transform属性将弹窗居中 *!*/
+    }
+</style>
 <div id="app">
     <div id="results" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
@@ -116,7 +126,9 @@
 <script src="js/vue.min.js" type="application/javascript"></script> 
 <script src="js/clipboard.min.js" type="application/javascript"></script> 
 <script src="js/jquery.min.js" type="application/javascript"></script> 
-<script src="js/bootstrap.min.js" type="application/javascript"></script> 
+<script src="js/bootstrap.min.js" type="application/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script src="js/app.js" type="application/javascript"></script>
+
 </body>
 </html>

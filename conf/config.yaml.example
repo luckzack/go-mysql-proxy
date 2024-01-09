@@ -1,0 +1,11 @@
+gui: "127.0.0.1:9999"
+use_embed_ui: true
+proxies:
+  - alias: db1
+    enabled: true
+    listen: "127.0.0.1:19991"
+    mysql: "ip:port"
+  - alias: db2
+    enabled: true
+    listen: "127.0.0.1:19992"
+    mysql: "ip:port"

@@ -16,7 +16,7 @@ var (
 	useLocalUI = flag.Bool("use-local", false, "Use local UI instead of embed")
 	mysqlDsn   = flag.String("mysql-dsn", "", "MySQL DSN for query execution capabilities")
 
-	config     = flag.String("config-file", "./conf/config.yaml", "Specify a config file")
+	config = flag.String("config-file", "./conf/config.yaml", "Specify a config file")
 )
 
 func appReadyInfo(appReadyChan chan bool) {
@@ -30,8 +30,7 @@ func main() {
 	runNew()
 }
 
-
-func runOld(){
+func runOld() {
 
 	flag.Parse()
 
@@ -50,26 +49,22 @@ func runOld(){
 	p.run()
 }
 
-
-func runNew(){
+func runNew() {
 	flag.Parse()
 
 	conf.ParseConfig(*config)
 
-	for _, proxy := range conf.Config().Proxies{
-		if !proxy.Enabled{
+	for _, proxy := range conf.Config().Proxies {
+		if !proxy.Enabled {
 			continue
 		}
-		go runProxy(proxy, conf.Config().GUI)
+		go runProxy(proxy)
 	}
-
-
-	select {
-
-	}
+	runServer(conf.Config().Proxies, conf.Config().GUI, !conf.Config().UseEmbedUI)
+	select {}
 }
 
-func runProxy(conf *conf.ProxyConfig, guiAddr string) {
+func runProxy(conf *conf.ProxyConfig) {
 	cmdChan := make(chan chat.Cmd)
 	cmdResultChan := make(chan chat.CmdResult)
 	connStateChan := make(chan chat.ConnState)
@@ -78,9 +73,9 @@ func runProxy(conf *conf.ProxyConfig, guiAddr string) {
 	hub := chat.NewHub(cmdChan, cmdResultChan, connStateChan)
 
 	go hub.Run()
-	go runHttpServerNew(hub, conf.Alias, guiAddr, true)
+	go addProxyRoute(hub, conf.Alias)
 
-	go func(){
+	go func() {
 		<-appReadyChan
 		time.Sleep(1 * time.Second)
 		fmt.Printf("[%s]Forwarding queries from `%s` to `%s` \n", conf.Alias, conf.Mysql, conf.Listen)

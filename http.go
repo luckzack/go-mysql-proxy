@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/gogoods/x/sync"
+	"github.com/gogoods/mysql-proxy/conf"
 	"log"
 	"net/http"
 
@@ -16,7 +16,6 @@ const (
 	websocketRoute = "/ws"
 	webRoute       = "/"
 )
-
 
 func runHttpServerOld(hub *chat.Hub) {
 	// Websockets endpoint
@@ -86,9 +85,9 @@ func runHttpServerOld(hub *chat.Hub) {
 
 }
 
-func runHttpServerNew(hub *chat.Hub, alias, addr string, _useLocalUI bool) {
+func addProxyRoute(hub *chat.Hub, proxyAlias string) {
 	// Websockets endpoint
-	http.HandleFunc(websocketRoute + "/" +alias, func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(websocketRoute+"/"+proxyAlias, func(w http.ResponseWriter, r *http.Request) {
 		upgr := websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}
 
 		conn, err := upgr.Upgrade(w, r, nil)
@@ -113,7 +112,7 @@ func runHttpServerNew(hub *chat.Hub, alias, addr string, _useLocalUI bool) {
 	})
 
 	// Query execution endpoint
-	http.HandleFunc("/execute" + "/" +alias, func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/execute"+"/"+proxyAlias, func(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
 		if err != nil {
 			log.Println(err)
@@ -148,12 +147,23 @@ func runHttpServerNew(hub *chat.Hub, alias, addr string, _useLocalUI bool) {
 		}
 	})
 
-	sync.Once(func(){
-		http.Handle(webRoute, http.FileServer(FS(_useLocalUI)))
+	//sync.Once(func() {
+	//	http.Handle(webRoute, http.FileServer(FS(_useLocalUI)))
+	//
+	//	fmt.Printf("Web gui available at `http://%s/` \n", addr)
+	//	log.Fatal(http.ListenAndServe(addr, nil))
+	//
+	//})
+}
 
-		fmt.Printf("Web gui available at `http://%s/` \n", addr)
-		log.Fatal(http.ListenAndServe(addr, nil))
-
+func runServer(proxies []*conf.ProxyConfig, addr string, _useLocalUI bool) {
+	http.HandleFunc("/apply", func(w http.ResponseWriter, r *http.Request) {
+		bs, _ := json.Marshal(proxies)
+		w.Write(bs)
 	})
 
+	http.Handle(webRoute, http.FileServer(FS(_useLocalUI)))
+
+	fmt.Printf("Web gui available at `http://%s/` \n", addr)
+	log.Fatal(http.ListenAndServe(addr, nil))
 }

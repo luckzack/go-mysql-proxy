@@ -8,10 +8,75 @@ const notificationShowTimeMs = 2000;
 
 var ws;
 
+
+var onProxySelected = function (val){
+     console.log("Selected ", val);
+     location.href = "?alias="+val
+}
+
+var selectProxyAlias = function (){
+
+  //   swal.fire({
+  //       title: '自定义按钮内容',
+  //       html: `
+  //   <button class="btn btn-primary" onclick="onProxySelected('reply \b 11111111111111111')">回复 \n 11111111111111111 </button>
+  //   <button class="btn btn-primary" onclick="onProxySelected('delete \b 11111111111111111 ' )">删除 \n 11111111111111111 </button>
+  //   <button class="btn btn-primary" onclick="onProxySelected('cancel \b 11111111111111111')">取消 \n 11111111111111111 </button>
+  // `,
+  //       showCloseButton: false,
+  //       showCancelButton: false,
+  //       showConfirmButton: false,
+  //       allowOutsideClick: false
+  //   });
+
+    $.get(
+        "/apply",
+        function (data) {
+
+            let proxies = JSON.parse(data)
+            console.log("get dbs:", proxies)
+            // [{"Alias":"db1","Enabled":true,"Listen":"127.0.0.1:58881","Mysql":"9.135.104.194:3306"},{"Alias":"db2","Enabled":true,"Listen":"127.0.0.1:58882","Mysql":"9.135.104.194:3306"}]
+
+            let buttons = []
+            for (let i in proxies){
+                if (proxies[i]['Enabled']){
+
+                    let text = proxies[i]['Alias'] + " 👉 "+ proxies[i]['Mysql']
+                    let val = proxies[i]['Alias']
+
+                    let button = `<button class="btn btn-primary" onclick="onProxySelected('${val}')">${text} </button> `
+                    buttons.push(button)
+                }
+            }
+
+            swal.fire({
+                title: 'Please select one db: \n ————————————————',
+                height: 600,
+                customClass: {
+                    popup: 'custom-popup-class'
+                },
+                html: buttons.join("\n"),
+                showCloseButton: false,
+                showCancelButton: false,
+                showConfirmButton: false,
+                allowOutsideClick: false
+            });
+
+        }
+
+    );
+
+}
+
 var getProxyAlias = function (){
+
     let url = window.location.href
     let paramsStr =url.split('?')[1]
     let params = new URLSearchParams(paramsStr)
+
+    if (!params.get('alias')){
+        selectProxyAlias()
+    }
     return params.get('alias')
 };
 
@@ -76,7 +141,7 @@ new Vue({
                     executeUrl  + "/" + getProxyAlias(),
                     {
                         data: JSON.stringify({
-                            databse:this.connections[connId][queryId]['database'],
+                            database:this.connections[connId][queryId]['database'],
                             query: this.connections[connId][queryId]['query'],
                             parameters: this.connections[connId][queryId]['parameters']
                         })
@@ -139,7 +204,11 @@ new Vue({
         // Connects to websocket server
         connect: function () {
             var app = this;
-            var proxyAlias =  getProxyAlias();
+            var proxyAlias = getProxyAlias();
+
+            if (! proxyAlias){
+                return
+            }
 
             // Connect back to the same addr this page was loaded from
             var parser = document.createElement('a');

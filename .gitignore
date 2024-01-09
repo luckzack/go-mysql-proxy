@@ -1,3 +1,4 @@
 .idea
 mysql-proxy
 mysql-proxy.exe
+./conf/config.yaml

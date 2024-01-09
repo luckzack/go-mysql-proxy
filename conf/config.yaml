@@ -1,10 +1,11 @@
 gui: "127.0.0.1:9999"
+use_embed_ui: false
 proxies:
   - alias: db1
     enabled: true
     listen: "127.0.0.1:58881"
-    mysql: "db1:58881"
+    mysql: "9.135.104.194:3306"
   - alias: db2
     enabled: true
-    listen: "127.0.0.1:59904"
-    mysql: "db2:59904"
+    listen: "127.0.0.1:58882"
+    mysql: "9.135.104.194:3306"
